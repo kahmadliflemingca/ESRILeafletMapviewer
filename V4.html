@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>Esri Leaflet Tutorials: Display a map</title>
+
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
+
+    <!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
+    <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js"></script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        color: #323232;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+
+    <script>
+
+      const map = L.map("map", {
+        minZoom: 2
+      })
+
+      map.setView([63.347, -96.794], 4);
+
+      const apiKey = "AAPKf48975af0121408b82974ded6a03f950UKiVqLWY6Qxo39ayKG7kG2kg3wxSMx2wmrbLJhef8WRLbqW5u_4ew-LRjIax_zwX";
+
+      const basemapEnum = "ArcGIS:Streets";
+
+      L.esri.Vector.vectorBasemapLayer(basemapEnum, {
+        apiKey: apiKey
+      }).addTo(map);
+      var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var geojsonFeature = JSON.parse(this.responseText);
+        L.geoJSON(geojsonFeature).addTo(map);
+    }
+};
+xmlhttp.open("GET", "canada.geojson", true);
+xmlhttp.send();
+    </script>
+
+  </body>
+
+</html>
