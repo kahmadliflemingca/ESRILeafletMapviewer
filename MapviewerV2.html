@@ -1,0 +1,76 @@
+<html>
+    <head>
+        <title>Web 4 2022 Leaflet Soultion</title>
+        <!-- Load Leaflet Js and Css-->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">
+        <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+        <!-- Load ESRI Leaflet-->
+        <script src="https://unpkg.com/esri-leaflet@3.0.4/dist/esri-leaflet.js"></script>
+        <script src="https://unpkg.com/esri-leaflet-vector@3.0.0/dist/esri-leaflet-vector.js"></script>
+      integrity="sha512-6ZCLMiYwTeli2rVh3XAPxy3YoR5fVxGdH/pz+KMCzRY2M65Emgkw00Yqmhh8qLGeYQ3LbVZGdmOX9KUjSKr0TA=="
+
+        
+        <!-- Style the map-->
+        <style>
+            body {margin: 0; padding: 0;}
+            #map 
+            { 
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                font-size: 14px;
+                color: aqua;
+            }
+    #info-pane {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 400;
+    padding: 1em;
+    background: #69c414
+  }
+
+
+
+
+    
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <div id="info-pane" class="leaflet-bar">Welcome to xxx Conservancy's Map viewer</div>
+        <script>
+             const apiKey = "AAPKf48975af0121408b82974ded6a03f950UKiVqLWY6Qxo39ayKG7kG2kg3wxSMx2wmrbLJhef8WRLbqW5u_4ew-LRjIax_zwX"
+            const basemapEnum = "ArcGIS:StreetsRelief";
+// setting up the map 
+            const map = L.map("map",{maxZoom:15 }).setView([63.347, -96.794 ], 3);
+
+            L.esri.Vector.vectorBasemapLayer(basemapEnum, {apiKey: apiKey}).addTo(map);
+// Grab geojson and display it on the map
+ var xmlhttp = new XMLHttpRequest();
+xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var geojsonFeature = JSON.parse(this.responseText);
+
+
+    
+//onEachFeature option is used to specify a function that will be called for each feature in the GeoJSON data. The function takes two arguments: the feature object and the layer object created for the feature. Inside the function, a popup content string is created using the feature properties, and the bindPopup() method is called to bind the popup to the layer.
+        L.geoJSON(geojsonFeature, {
+            onEachFeature: function(feature, layer) {
+                var popupContent = "<p>English Name: " + feature.properties.PRNAME + "</p>" +
+                    "<p>French Name: " + feature.properties.PRFNAME+ "</p>";
+//Set pop-ups in the geojson 
+                layer.bindPopup(popupContent);
+            }
+        }).addTo(map);
+    }
+};
+xmlhttp.open("GET", "canada.geojson", true);
+xmlhttp.send();
+///Repeat this step as much as you wish to add more layers
+
+        </script>
+    </body>
+</html>
