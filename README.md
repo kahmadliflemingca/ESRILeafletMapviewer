@@ -1,5 +1,12 @@
 # ESRILeafletMapviewer
 
+************* DRAFT***************
+****************************PROCESSING STEPS******************************
+
+--------------- I will be updating this document as I develop the Map Viewer-------------------------------------
+
+
+
 
 1) acquire a source code from collab project (https://luna.flemingcollege.ca/geom99/2022/webCharlie/leaflet.html)
 2) start work change customize and build on top it.
