@@ -15,5 +15,8 @@
 5) convert shp file to GeoJson in arcgis pro, or use GDAL org2org
 6) add a code to bring Geojson in to the map.  ( got code from ChatGPT)
 NEXT STEPS: 
+Configure Pop-ups: display features : https://developers.arcgis.com/esri-leaflet/layers/display-a-popup/ (DONE!)
+7) Add more GeoJson to the map -- time" 9:!2 - 10:14  --- using same method, added second geojson data to the map
+   SHP to geojson conversion in PRO.
+   
 
-1 . Configure Pop-ups: display features : https://developers.arcgis.com/esri-leaflet/layers/display-a-popup/
