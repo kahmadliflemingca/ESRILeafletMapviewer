@@ -50,16 +50,48 @@
       L.esri.Vector.vectorBasemapLayer(basemapEnum, {
         apiKey: apiKey
       }).addTo(map);
-      var xmlhttp = new XMLHttpRequest();
+
+
+// Grab geojson and display it on the map
+var xmlhttp = new XMLHttpRequest();
 xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
         var geojsonFeature = JSON.parse(this.responseText);
-        L.geoJSON(geojsonFeature).addTo(map);
+//onEachFeature option is used to specify a function that will be called for each feature in the GeoJSON data. The function takes two arguments: the feature object and the layer object created for the feature. Inside the function, a popup content string is created using the feature properties, and the bindPopup() method is called to bind the popup to the layer.
+      //Set pop-ups in the geojson 
+        L.geoJSON(geojsonFeature, {
+            onEachFeature: function(feature, layer) {
+                var popupContent = "<p>English Name: " + feature.properties.PRNAME + "</p>" +
+                    "<p>French Name: " + feature.properties.PRFNAME+ "</p>";
+                layer.bindPopup(popupContent);
+            }
+        }).addTo(map);
     }
 };
 xmlhttp.open("GET", "canada.geojson", true);
 xmlhttp.send();
-    </script>
+
+// Grab hydrogeojson and display it on the map
+var xmlhttp2 = new XMLHttpRequest();
+xmlhttp2.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        var geojsonFeature2 = JSON.parse(this.responseText);
+//onEachFeature option is used to specify a function that will be called for each feature in the GeoJSON data. The function takes two arguments: the feature object and the layer object created for the feature. Inside the function, a popup content string is created using the feature properties, and the bindPopup() method is called to bind the popup to the layer.
+//Set pop-ups in the geojson       
+L.geoJSON(geojsonFeature2, {
+            onEachFeature: function(feature, layer) {
+                var popupContent2 = "<p>Area: " + feature.properties.AREA + "</p>" +
+                    "<p>Perimeter: " + feature.properties.PERIMETER+ "</p>";
+                    
+                layer.bindPopup(popupContent2);
+            }
+        }).addTo(map);
+    }
+};
+xmlhttp2.open("GET", "hydro.geojson", true);
+xmlhttp2.send();
+
+        </script>
 
   </body>
 
