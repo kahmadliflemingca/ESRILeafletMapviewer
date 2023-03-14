@@ -18,5 +18,7 @@ NEXT STEPS:
 Configure Pop-ups: display features : https://developers.arcgis.com/esri-leaflet/layers/display-a-popup/ (DONE!)
 7) Add more GeoJson to the map -- time" 9:!2 - 10:14  --- using same method, added second geojson data to the map
    SHP to geojson conversion in PRO.
+8) Hydro and waterbodies geojsons added and diplayed on the map
+9) Figure out how to symbolize layers
    
 
