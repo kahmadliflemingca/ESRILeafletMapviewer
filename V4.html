@@ -1,81 +1,92 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title> Web 4 Mapviewer</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Mapviewer</title>
 
-    <!-- Load Leaflet from CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
+  <!-- Load Leaflet from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
 
-    <!-- Load Esri Leaflet from CDN -->
-    <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
-    <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js"></script>
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
+  <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js"></script>
 
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 14px;
-        color: #323232;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
-    <script>
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      color: #323232;
+    }
+  </style>
+</head>
 
-      const map = L.map("map", {
-        minZoom: 2
-      })
+<body>
+  <div id="map"></div>
 
-      map.setView([44.0739, -78.5027], 10);
+  <script>
+    const map = L.map("map", {
+      minZoom: 2
+    })
 
-      const apiKey = "AAPKf48975af0121408b82974ded6a03f950UKiVqLWY6Qxo39ayKG7kG2kg3wxSMx2wmrbLJhef8WRLbqW5u_4ew-LRjIax_zwX";
+    map.setView([44.0739, -78.5027], 10);
 
-      const basemapEnum = "OSM:Standard";
+    const apiKey = "AAPKf48975af0121408b82974ded6a03f950UKiVqLWY6Qxo39ayKG7kG2kg3wxSMx2wmrbLJhef8WRLbqW5u_4ew-LRjIax_zwX";
 
-      L.esri.Vector.vectorBasemapLayer(basemapEnum, {
-        apiKey: apiKey
-      }).addTo(map);
+    const basemapEnum = "OSM:Standard";
 
-      // Configure pop-ups
-      function addGeoJSONLayer(url, popupContent, style) {
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function () {
-          if (this.readyState == 4 && this.status == 200) {
-            var geojsonFeature = JSON.parse(this.responseText);
-            L.geoJSON(geojsonFeature, {
-              onEachFeature: function (feature, layer) {
-                var popup = L.popup().setContent(popupContent(feature.properties));
-                layer.bindPopup(popup);
-              },
-              style: style
-            }).addTo(map);
-          }
-        };
-        xmlhttp.open("GET", url, true);
-        xmlhttp.send();
-      }
+    L.esri.Vector.vectorBasemapLayer(basemapEnum, {
+      apiKey: apiKey
+    }).addTo(map);
 
-      // Add GeoJSON Layers
-      addGeoJSONLayer("hydro.geojson", function (properties) {
-        return "<p>Area " + properties.AREA + "</p>" +
-          "<p>Per: " + properties.PERIMETER + "</p>";
-      }, {color: "blue"});
+    // Configure pop-ups
+    function addGeoJSONLayer(url, popupContent, style) {
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var geojsonFeature = JSON.parse(this.responseText);
+          var layer = L.geoJSON(geojsonFeature, {
+            onEachFeature: function (feature, layer) {
+              var popup = L.popup().setContent(popupContent(feature.properties));
+              layer.bindPopup(popup);
+            },
+            style: style
+          });
+          // Add layer control
+          layerControl.addOverlay(layer, url.split(".")[0]);
+          layer.addTo(map);
+        }
+      };
+      xmlhttp.open("GET", url, true);
+      xmlhttp.send();
+    }
 
-      addGeoJSONLayer("waterbody.geojson", function (properties) {
+    // Create layer control object
+    var layerControl = L.control.layers(null, null, {
+      collapsed: false
+    }).addTo(map);
+
+    // Add GeoJSON Layers
+    addGeoJSONLayer("hydro.geojson", function (properties) {
+      return "<p>Area " + properties.AREA + "</p>" +
+        "<p>Perimeter: " + properties.PERIMETER + "</p>";
+    }, {
+      color: "blue"
+    });
+
+    addGeoJSONLayer("waterbody.geojson", function (properties) {
         return "<p>Waterbody area: " + properties.AREA + "</p>" +
           "<p>Waterbody perimeter: " + properties.PERIMETER + "</p>";
       }, {color: "pink"});
@@ -87,9 +98,9 @@
 
 
 
-
     </script>
 
   </body>
 
 </html>
+
