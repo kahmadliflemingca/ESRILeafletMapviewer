@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-    <title>Mapviewer</title>
+    <title> Web 4 Mapviewer</title>
 
     <!-- Load Leaflet from CDN -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
@@ -31,7 +31,6 @@
       }
     </style>
   </head>
-
   <body>
     <div id="map"></div>
 
@@ -41,57 +40,55 @@
         minZoom: 2
       })
 
-      map.setView([63.347, -96.794], 4);
+      map.setView([44.0739, -78.5027], 10);
 
       const apiKey = "AAPKf48975af0121408b82974ded6a03f950UKiVqLWY6Qxo39ayKG7kG2kg3wxSMx2wmrbLJhef8WRLbqW5u_4ew-LRjIax_zwX";
 
-      const basemapEnum = "ArcGIS:Streets";
+      const basemapEnum = "OSM:Standard";
 
       L.esri.Vector.vectorBasemapLayer(basemapEnum, {
         apiKey: apiKey
       }).addTo(map);
 
+      // Configure pop-ups
+      function addGeoJSONLayer(url, popupContent, style) {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            var geojsonFeature = JSON.parse(this.responseText);
+            L.geoJSON(geojsonFeature, {
+              onEachFeature: function (feature, layer) {
+                var popup = L.popup().setContent(popupContent(feature.properties));
+                layer.bindPopup(popup);
+              },
+              style: style
+            }).addTo(map);
+          }
+        };
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+      }
 
-// Grab geojson and display it on the map
-var xmlhttp = new XMLHttpRequest();
-xmlhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-        var geojsonFeature = JSON.parse(this.responseText);
-//onEachFeature option is used to specify a function that will be called for each feature in the GeoJSON data. The function takes two arguments: the feature object and the layer object created for the feature. Inside the function, a popup content string is created using the feature properties, and the bindPopup() method is called to bind the popup to the layer.
-      //Set pop-ups in the geojson 
-        L.geoJSON(geojsonFeature, {
-            onEachFeature: function(feature, layer) {
-                var popupContent = "<p>English Name: " + feature.properties.PRNAME + "</p>" +
-                    "<p>French Name: " + feature.properties.PRFNAME+ "</p>";
-                layer.bindPopup(popupContent);
-            }
-        }).addTo(map);
-    }
-};
-xmlhttp.open("GET", "canada.geojson", true);
-xmlhttp.send();
+      // Add GeoJSON Layers
+      addGeoJSONLayer("hydro.geojson", function (properties) {
+        return "<p>Area " + properties.AREA + "</p>" +
+          "<p>Per: " + properties.PERIMETER + "</p>";
+      }, {color: "blue"});
 
-// Grab hydrogeojson and display it on the map
-var xmlhttp2 = new XMLHttpRequest();
-xmlhttp2.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-        var geojsonFeature2 = JSON.parse(this.responseText);
-//onEachFeature option is used to specify a function that will be called for each feature in the GeoJSON data. The function takes two arguments: the feature object and the layer object created for the feature. Inside the function, a popup content string is created using the feature properties, and the bindPopup() method is called to bind the popup to the layer.
-//Set pop-ups in the geojson       
-L.geoJSON(geojsonFeature2, {
-            onEachFeature: function(feature, layer) {
-                var popupContent2 = "<p>Area: " + feature.properties.AREA + "</p>" +
-                    "<p>Perimeter: " + feature.properties.PERIMETER+ "</p>";
-                    
-                layer.bindPopup(popupContent2);
-            }
-        }).addTo(map);
-    }
-};
-xmlhttp2.open("GET", "hydro.geojson", true);
-xmlhttp2.send();
+      addGeoJSONLayer("waterbody.geojson", function (properties) {
+        return "<p>Waterbody area: " + properties.AREA + "</p>" +
+          "<p>Waterbody perimeter: " + properties.PERIMETER + "</p>";
+      }, {color: "pink"});
 
-        </script>
+ /*Add a metric scale bar to the map*/
+ L.control.scale({metric:true, imperial:false}).addTo(map);
+
+
+
+
+
+
+    </script>
 
   </body>
 
