@@ -20,5 +20,10 @@ Configure Pop-ups: display features : https://developers.arcgis.com/esri-leaflet
    SHP to geojson conversion in PRO.
 8) Hydro and waterbodies geojsons added and diplayed on the map
 9) Figure out how to symbolize layers -- DONE ( SPENT 2 HOURS, MARCH 14) 
-   NEXT -- Figure out how to layer add a layer control toggle on/off
+10) Added metric scale bar
+11) - Figured out how to layer add a layer control toggle on/off
+12) NEXT STEPS: add more layers
+13) Try to enhance it
+14) add more capabilities
+15) 
 
