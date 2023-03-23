@@ -1,166 +1,41 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+  <title>Esri Leaflet Map with Token Authentication</title>
   <meta charset="utf-8" />
-  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>Mapviewer</title>
-
-  <!-- Load Leaflet from CDN -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
-
-  <!-- Load Esri Leaflet from CDN -->
-  <script src="https://unpkg.com/esri-leaflet@3.0.10/dist/esri-leaflet.js"></script>
-  <script src="https://unpkg.com/esri-leaflet-vector@4.0.1/dist/esri-leaflet-vector.js"></script>
-  <script src="https://unpkg.com/esri-leaflet-geocoder@3.0.0/dist/esri-leaflet-geocoder.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.0.0/dist/esri-leaflet-geocoder.css" />
-
-<!-- Load Esri Leaflet measure CDN -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css" />
- <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-
-    #map {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      right: 0;
-      left: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 14px;
-      color: #323232;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Load Esri Leaflet CSS and JS -->
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet@3.1.0/dist/esri-leaflet.css" />
+  <script src="https://unpkg.com/esri-leaflet@3.1.0/dist/esri-leaflet.js"></script>
+  <!-- Load jQuery JS -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-
 <body>
-  <div id="map"></div>
-  <button id="identifyButton">Identify</button>
-
+  <!-- Create a div element for the map -->
+  <div id="map" style="height: 500px"></div>
   <script>
-    const map = L.map("map", {
-      minZoom: 2
-    })
+// Define the URL of the feature layer
+var featureLayerUrl = "https://services1.arcgis.com/pMeXRvgWClLJZr3s/ArcGIS/rest/services/tree_data_collection1/FeatureServer/0";
 
-    map.setView([44.0739, -78.5027], 10);
+// Define the access token
+var accessToken = "sqk-5mdrCuoOCPmCW3Z_tjwK1JaBlNNQfDab61eMnVPwVnu-Ly6DgVypZo04scCTeXs73IbPMVRYrqM4Mskl2IfgTj_TV-Qz8-7noV06Mo_OY-7_0n-lUemj13kXv-xhi13aUZz_7bz9eMNDdBXw6Q..";
 
-    const apiKey = "AAPKf48975af0121408b82974ded6a03f950UKiVqLWY6Qxo39ayKG7kG2kg3wxSMx2wmrbLJhef8WRLbqW5u_4ew-LRjIax_zwX";
+// Create a new map with Esri Leaflet
+var map = L.map('map').setView([37.75, -122.45], 10);
 
-    const vectorTiles = {};
-      const allEnums = [
-        "ArcGIS:Imagery",
+// Add a tile layer to the map
+L.esri.basemapLayer('Topographic').addTo(map);
 
-        "ArcGIS:LightGray",
-        "ArcGIS:LightGray:Base",
-        ,
-        "ArcGIS:DarkGray",
-        
-        "ArcGIS:DarkGray:Labels",
-        "ArcGIS:Navigation",
-        "ArcGIS:NavigationNight",
-        "ArcGIS:Streets",
-        "ArcGIS:StreetsNight",
-
-        "ArcGIS:Topographic",
-  
-        "OSM:Standard",
-
-        "OSM:LightGray",
-
-        "OSM:DarkGray",
-        "ArcGIS:Terrain",
-        "ArcGIS:Midcentury",
-
-      ];
-
-      // the L.esri.Vector.vectorBasemapLayer basemap enum defaults to 'ArcGIS:Streets' if omitted
-      vectorTiles.Default = L.esri.Vector.vectorBasemapLayer(null, {
-        apiKey
-      });
-      allEnums.forEach((enumString) => {
-        vectorTiles[enumString] = L.esri.Vector.vectorBasemapLayer(enumString, {
-          apiKey
-        });
-      });
-
-      L.control
-        .layers(vectorTiles, null, {
-          collapsed: true
-        })
-        .addTo(map);
-
-      vectorTiles.Default.addTo(map);
-    // Configure pop-ups
-    function addGeoJSONLayer(url, popupContent, style) {
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-          var geojsonFeature = JSON.parse(this.responseText);
-          var layer = L.geoJSON(geojsonFeature, {
-            onEachFeature: function (feature, layer) {
-              var popup = L.popup().setContent(popupContent(feature.properties));
-              layer.bindPopup(popup);
-            },
-            style: style
-          });
-          // Add layer control
-          layerControl.addOverlay(layer, url.split(".")[0]);
-          layer.addTo(map);
-        }
-      };
-      xmlhttp.open("GET", url, true);
-      xmlhttp.send();
-    }
-
-    // Create layer control object
-    var layerControl = L.control.layers(null, null, {
-      collapsed: false 
-    }).addTo(map);
-
-    // Add GeoJSON Layers
-    addGeoJSONLayer("hydro.geojson", function (properties) {
-      return "<p>Area " + properties.AREA + "</p>" +
-        "<p>Perimeter: " + properties.PERIMETER + "</p>";
-    }, {
-      color: "blue"
-    });
-
-    addGeoJSONLayer("waterbody.geojson", function (properties) {
-        return "<p>Waterbody area: " + properties.AREA + "</p>" +
-          "<p>Waterbody perimeter: " + properties.PERIMETER + "</p>";
-      }, {color: "gray"});
-
- /*Add a metric scale bar to the map*/
- L.control.scale({metric:true, imperial:false}).addTo(map);
-
-
-// Create a new control for the measurement tool
-var measureControl = L.control.measure({
-  position: 'topright',
-  primaryLengthUnit: 'meters',
-  secondaryLengthUnit: 'kilometers',
-  primaryAreaUnit: 'sqmeters',
-  secondaryAreaUnit: undefined ,
-  completedColor: '#C8F2BE' ,
-  className:'leaflet-measure-resultpopup', autoPanPadding: [10, 10] 
-  
+// Create a new feature layer with token authentication
+var featureLayer = L.esri.featureLayer({
+  url: featureLayerUrl,
+  token: accessToken,
+  useCors: false // Disable CORS to prevent issues with token authentication
 });
 
-// Add the control to the map
-measureControl.addTo(map);
+// Add the feature layer to the map
+featureLayer.addTo(map);
 
-
-
-
-
-    </script>
-
-  </body>
-
+  </script>
+</body>
 </html>
